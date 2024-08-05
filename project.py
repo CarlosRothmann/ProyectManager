@@ -2,32 +2,28 @@ import os
 import tkinter
 import shutil
 from tkinter import simpledialog, filedialog, messagebox
+from notion_conector import *
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 #Definir funcion para crear carpetas
+# TO DO 
 
-def ejecutar():
-    if __name__ == '__main__':
-        crear_carpeta()
+#Agregar concur
 
-def validar_nombre(nombre):
-    if not nombre[:5].isdigit():
-        return False
-    if nombre[5] != "-":
-        return False
-    if not nombre[6:].isupper():
-        return False
-    return True
-
-def crear_carpeta():
-    #Crear ventana para seleccionar la carpeta
+def main():
+    name = set_name()
+    directory_name()
+    make_directories()
+    
+    
+def set_name():
     root = tkinter.Tk()
     root.withdraw()
     
     #Ingresar nombre de la carpeta
-    
     while True:
         nombre_carpeta = simpledialog.askstring(
-            title="CREACIÓN CARPETAS DE PROYECTO", 
+            title="CREACIÓN DIRECTORIO PROYECTO", 
             prompt="Ingrese el nombre de la carpeta, Ejemplo: 00000-PROYECTO PRUEBA")
     
         if validar_nombre(nombre_carpeta):
@@ -43,6 +39,18 @@ def crear_carpeta():
             messagebox.showerror(
                 "Error", 
                 "Nombre incorrecto. Recuerda que debe tener 5 números, un guion y luego todo en mayúsculas.")
+
+def directory_name(code: str , name: str):
+    if not nombre[:5].isdigit():
+        return False
+    if nombre[5] != "-":
+        return False
+    if not nombre[6:].isupper():
+        return False
+    return True
+
+def make_directories(path):
+    #Crear ventana para seleccionar la carpeta
         
     #Crear subcarpetas
     subcarpetas = ['10-ENVIOS', '20-GESTION', '30-BIM', '40-AP','50-PB','60-PE','70-DF','80-AS-BUILT','90-FOTOS']
@@ -82,3 +90,6 @@ def crear_carpeta():
     mensaje_final = f"{mensaje_carpeta}\n{mensaje_archivo}"
     messagebox.showinfo("Resultado", mensaje_final)
         
+        
+if __name__ == '__main__':
+    main()
