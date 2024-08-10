@@ -1,24 +1,46 @@
 import pytest
-import requests
+from unittest.mock import Mock
 from notion_conector import *
 import project as proj
+from pathlib import Path
 
 #Notion_conector Test
 
-def test_connecion():
-    url = url =f"https://api.notion.com/v1/databases/{PROJECT_DB_ID}/query"
-    response = requests.post(url, headers=HEADERS)
+#TO DO:
+#Add Async to the test to speed up the wait between responses
 
-    assert response.status_code == 200 
 
-def test_limit_code():
-    pass
+#FIXTURES
 
-def test_wrong_code():
+@pytest.fixture
+def long_name():
+    return "Nombre de mas de cinco palabras"
+
+
+# TESTING PROJECT
+
+def test_directory():
     
-    wrong_code = "2A345"
+    directory = proj.main_directory()
     
-    assert new_code(wrong_code) == ValueError("Code format its not correct")
-
-def test_check_project_name():
-    pass
+    assert directory
+    
+def test_check_directory_name(long_name):
+    
+    with pytest.raises(
+        ValueError, 
+        match="Name must have between 2 and 5 words"
+        ):
+        
+        proj.check_directory_name(long_name)
+        
+def test_create_directory():
+    
+    test_directory = proj.main_directory()
+    code = "24XXX"
+    name = "TEST"
+    
+    new_directory = proj.create_directory(test_directory, code, name)
+    assert Path(
+        "C:\\Users\\User\\Documents\\GitHub\\ProyectManager\\test_projects\\24XXX-TEST"
+        ).exists()

@@ -7,6 +7,8 @@ PROJECT_DB_MANAGER_KEY = "secret_yHa3RYk1PlIzgpbOYDSBv1y5lZ0jdyxaHtYgNOgF9dI"
 PROJECT_DB_ID = "14ccd3058a2f4b6eabc2a18686e00972"
 
 
+#CLIENT DATA BASE
+
 HEADERS = {
     "Authorization" : f"Bearer {PROJECT_DB_MANAGER_KEY}",
     "Content-Type" : "application/json",
@@ -14,21 +16,21 @@ HEADERS = {
 }
 
 def main(p_name, ubicacion, tipo):
-    pages = get_pages(PROJECT_DB_ID, HEADERS)
-    # last_code = get_project_id(pages)
-    # code = new_code(last_code)
+    data = make_request(PROJECT_DB_ID, HEADERS)
+    pages = process_data(data)
+    last_code = get_project_id(pages)
+    code = new_code(last_code)
     
-    # valid_name = check_project_name(pages, p_name)
+    valid_name = check_project_name(pages, p_name)
     
-    # data = page_data(code, valid_name, ubicacion, tipo)
+    data = page_data(code, valid_name, ubicacion, tipo)
 
-    # result = create_page(data, PROJECT_DB_ID, HEADERS)
-    # print(result)
-    properties = get_properties(pages)
-    checked_properties = check_properties(properties)
-    print(checked_properties)
+    result = create_page(data, PROJECT_DB_ID, HEADERS)
+    print(result) 
+      
     
-def get_pages(data_id: str, headers:dict):
+    
+def make_request(data_id: str, headers:dict):
     
     """It's access the notion database to get the pages needed,
     the access key goes in the headers and the page for
@@ -36,7 +38,28 @@ def get_pages(data_id: str, headers:dict):
     
     url =f"https://api.notion.com/v1/databases/{data_id}/query"
     response = requests.post(url, headers=headers)
-    data = response.json()
+    
+    try: 
+        response.raise_for_status()
+        
+        #Catch all kind of HTTPErrors to inform the final user
+    except requests.exceptions.HTTPError as error:
+        raise ValueError(f"Error encounter: {error}")
+    except requests.exceptions.ConnectionError as error:
+        raise ValueError(f"A connection error ocurred")
+        
+    return response
+
+def process_data(response):
+    
+    try:
+        data = response.json()
+    except ValueError:
+        raise ValueError("Invalid JSON response")
+    
+    if not data:
+        raise ValueError("Response data is empty")
+    
     return data["results"]
 
 def get_properties(pages: dict):
@@ -67,7 +90,7 @@ def check_properties(properties: list):
     for propertie in correct_properties:
         if propertie not in properties:
             raise ValueError(
-                "f{propertie} does not math database, check database headers"
+                "headers do not math database, correct headers are: Proyecto, Código, Cliente, Ubicación, Tipo proyecto"
                 )
 
     return correct_properties
@@ -111,7 +134,7 @@ def new_code(project_id: str):
     
     return f"{str(year)[-2:]}{letter}{new_ending:02}"
 
-def check_project_name(pages: dict, project_name: str):
+def check_project_name(pages: dict, name: str):
     
     """Return a list with all the project names"""
     
@@ -120,10 +143,10 @@ def check_project_name(pages: dict, project_name: str):
         project_name = page["properties"]["Proyecto"]["title"][0]["text"]["content"]
         project_names.append(project_name)
         
-    if project_name in project_names:
+    if name in project_names:
         raise ValueError("Name already exists")
     else:
-        return project_name
+        return name
 
 def page_data(
     p_name: str, 
@@ -149,6 +172,7 @@ def page_data(
 
 def create_page(data: dict, page_id: str, headers:dict):
     
+    
     """Creates a new page on the database selected."""
     
     create_url = "https://api.notion.com/v1/pages"
@@ -157,7 +181,15 @@ def create_page(data: dict, page_id: str, headers:dict):
     
     res = requests.post(create_url, headers=headers, json=payload)
 
-    return res.status_code
+    try: 
+        res.raise_for_status()
+        return "Page created"
+        #Catch all kind of HTTPErrors to inform the final user
+    except requests.exceptions.HTTPError as error:
+        raise ValueError(f"Error encounter: {error}")
+    except requests.exceptions.ConnectionError as error:
+        raise ValueError(f"A connection error ocurred")
+
     
 if __name__ == "__main__":
-    main("Proyecto prueba con loreto", "Hogar, ESP", "Sostenibilidad")
+    main("Proyecto prueba con Main", "Hogar, ESP", "Sostenibilidad")
