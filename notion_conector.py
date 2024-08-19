@@ -18,12 +18,12 @@ HEADERS = {
 def main(p_name, ubicacion, tipo):
     data = make_request(PROJECT_DB_ID, HEADERS)
     pages = process_data(data)
-    last_code = get_project_id(pages)
-    code = new_code(last_code)
+    last_project_id = get_project_id(pages)
+    project_id = new_project_id(last_project_id)
     
     valid_name = check_project_name(pages, p_name)
     
-    data = page_data(code, valid_name, ubicacion, tipo)
+    data = page_data(project_id, valid_name, ubicacion, tipo)
 
     result = create_page(data, PROJECT_DB_ID, HEADERS)
     print(result) 
@@ -80,49 +80,49 @@ def check_properties(properties: list):
     and the value they should have"""
     
     correct_properties = [
-        "Proyecto",
-        "Código",
-        "Cliente",
-        "Ubicación",
-        "Tipo proyecto",
+        "Project",
+        "ID",
+        "Client",
+        "Location",
+        "Project Type",
     ]
     
     for propertie in correct_properties:
         if propertie not in properties:
             raise ValueError(
-                "headers do not math database, correct headers are: Proyecto, Código, Cliente, Ubicación, Tipo proyecto"
+                "headers do not math database, correct headers are: Project, ID, Client, Location, Project Type"
                 )
 
     return correct_properties
         
 def get_project_id(pages: dict):
     
-    """Get the codes for each proyect puts them on a list, 
-    sorts them and return the last code"""
+    """Get the Project IDs for each proyect puts them on a list, 
+    sorts them and return the last Project ID"""
     
     projects_id = []
     for page in pages:
-        project_id = page["properties"]["Código"]["rich_text"]
+        project_id = page["properties"]["ID"]["rich_text"]
         if len(project_id) > 0:
             id_value = project_id[0]["text"]["content"]
             projects_id.append(id_value)
     sort_ids = sorted(projects_id)
     return sort_ids[-1]
     
-def new_code(project_id: str):
+def new_project_id(project_id: str):
     
-    """The code its set by the current year, plus a letter and 2 digits.
-    This allow multiple codes and each year it resets.
+    """The Project ID its set by the current year, plus a letter and 2 digits.
+    This allow multiple Project IDs and each year it resets.
     
-    It will return ValueError if the code its not correct or the code limit
+    It will return ValueError if the Project ID its not correct or the Project ID limit
     its reach"""
     
     year = datetime.today().year
     
-    #It catchs only the letter and ending number of the code to set new code.
+    #It catchs only the letter and ending number of the Project ID to set new Project ID.
     match = re.match(r"\d+([A-Z])(\d+)", project_id)
     if not match:
-        raise ValueError("Code format its not correct")
+        raise ValueError("Project ID format its not correct")
     
     letter, ending = match.groups()
     new_ending = int(ending) + 1
@@ -130,7 +130,7 @@ def new_code(project_id: str):
         new_ending = 0
         letter = chr(ord(letter)+1)
         if letter > "Z":
-            raise ValueError("Code limit reach, review the code sistem")
+            raise ValueError("Project ID limit reach, review the Project ID sistem")
     
     return f"{str(year)[-2:]}{letter}{new_ending:02}"
 
@@ -140,7 +140,7 @@ def check_project_name(pages: dict, name: str):
     
     project_names = []
     for page in pages:
-        project_name = page["properties"]["Proyecto"]["title"][0]["text"]["content"]
+        project_name = page["properties"]["Project"]["title"][0]["text"]["content"]
         project_names.append(project_name)
         
     if name in project_names:
@@ -151,22 +151,22 @@ def check_project_name(pages: dict, name: str):
 def page_data(
     p_name: str, 
     project_id: str, 
-    cliente: str, 
-    ubicacion: str, 
-    tipo: str,
+    client: str, 
+    project_type: str,
+    location: str, 
     ):
     
     """Creates a dict with all the data need to create the page. 
     The data needed is:
-    "Proyecto"(title), "Codigo"(rich_text), "Cliente"(rich_text), 
-    "Ubicación(rich_text)", "Tipo proyecto"(multi_select)"""
+    "Project"(title), "Codigo"(rich_text), "Client"(rich_text), 
+    "Location(rich_text)", "Project Type"(multi_select)"""
     
     data = {
-        "Proyecto" : {"title" : [{"text":{"content": p_name}}]},
-        "Código" : {"rich_text" : [{"text":{"content": project_id}}]},
-        "Cliente" : {"rich_text" : [{"text":{"content": cliente}}]},
-        "Ubicación" : {"rich_text" : [{"text":{"content": ubicacion}}]}, 
-        "Tipo proyecto" : {"multi_select": [{"name": tipo}]}
+        "Project" : {"title" : [{"text":{"content": p_name}}]},
+        "ID" : {"rich_text" : [{"text":{"content": project_id}}]},
+        "Client" : {"rich_text" : [{"text":{"content": client}}]},
+        "Location" : {"rich_text" : [{"text":{"content": location}}]}, 
+        "Project Type" : {"multi_select": [{"name": project_type}]}
     }
     return data
 
@@ -192,4 +192,4 @@ def create_page(data: dict, page_id: str, headers:dict):
 
     
 if __name__ == "__main__":
-    main("Proyecto prueba con Main", "Hogar, ESP", "Sostenibilidad")
+    pass
