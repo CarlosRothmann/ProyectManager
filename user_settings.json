@@ -1,0 +1,32 @@
+{
+    "main_directory": "C:/Users/User/Documents/GitHub/CS50P/project",
+    "file_directory": "C:/Users/User/Documents/GitHub/CS50P/project/base_files",
+    "folder_structure": {
+        "10-ENVIOS": {
+            "11-ENVIADOS": [],
+            "12-RECIBIDOS": [],
+            "13-ENTREGAS": [],
+            "14-TEST": []
+        },
+        "20-GESTION": {
+            "21-NORMATIVA": [],
+            "22-CLIENTE": [],
+            "23-INDUSTRIALES": []
+        },
+        "30-BIM": {
+            "31-GESTION": [],
+            "32-MODELOS": [],
+            "33-RECURSOS": [],
+            "34-LINKS": [],
+            "35-EXPORTS": [],
+            "36-IMAGENES": [],
+            "37-TRABAJO": []
+        },
+        "40-AP": [],
+        "50-PB": [],
+        "60-PE": [],
+        "70-DF": [],
+        "80-AS-BUILT": [],
+        "90-FOTOS": []
+    }
+}
