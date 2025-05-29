@@ -3,8 +3,8 @@ import re
 from datetime import datetime
 
 # Conection data
-PROJECT_DB_MANAGER_KEY = "secret_c19Gfx8xbb42hA3Mpqwi79IyFhZypWTxi6ZvYWY3Qtg"
-PROJECT_DB_ID = "238f8a82420846f5b6868db7e77f353a"
+PROJECT_DB_MANAGER_KEY = "."
+PROJECT_DB_ID = "."
 
 # CLIENT DATA BASE
 
